@@ -1,3 +1,7 @@
+# 🛰️ A.F.E.T.
+
+### Analitik Fotogrametri ve Etki Takibi
+
 🛰️ A.F.E.T. | Analitik Fotogrametri ve Etki Takibi afet sonrası kritik ilk dakikalarda karar vericilere ve operasyonel komuta merkezlerine yüksek doğruluklu, düşük gecikmeli görsel veri sunmak amacıyla geliştirilmiş bir Karar Destek Sistemidir (DSS). Özellikle İstanbul odağında Marmara Bölgesi için optimize edilen bu terminal; lojistik hat analizi, enkaz bölgeleme ve güvenli alan koordinasyonunu tek bir merkezde birleştirir.
 
 📌 Proje Özeti
