@@ -1,30 +1,75 @@
-A.F.E.T. : Afet Yönetimi ve Operasyonel Komuta Terminali
+🛰️ A.F.E.T. | Advanced Framework for Emergency Tracking
+Afet Yönetimi ve Operasyonel Komuta Terminali
+A.F.E.T., afet sonrası kritik ilk dakikalarda karar vericilere ve operasyonel komuta merkezlerine yüksek doğruluklu, düşük gecikmeli görsel veri sunmak amacıyla geliştirilmiş bir Karar Destek Sistemidir (DSS). Özellikle İstanbul odağında Marmara Bölgesi için optimize edilen bu terminal; lojistik hat analizi, enkaz bölgeleme ve güvenli alan koordinasyonunu tek bir merkezde birleştirir.
+
 📌 Proje Özeti
-A.F.E.T. (Advanced Framework for Emergency Tracking), afet sonrası kritik dakikalarda karar vericilere (operasyonel komuta merkezleri) yüksek doğruluklu görsel veri sunmak amacıyla geliştirilmiş bir Karar Destek Sistemidir (DSS). İstanbul odaklı Marmara Bölgesi için optimize edilen bu terminal; lojistik hat analizi, enkaz bölgeleme ve güvenli alan koordinasyonu özelliklerini tek bir düşük gecikmeli arayüzde birleştirir.
+Sistem, afet anındaki kaos ortamında veri kirliliğini eleyerek operatörün en doğru kararı en kısa sürede vermesini hedefler. Geleneksel ağır GIS yazılımlarının aksine, düşük donanım kaynaklarıyla maksimum performans sağlayan bir yapıya sahiptir.
+
+Odak Noktası: Lojistik hat analizi, dinamik zonlama ve eş zamanlı operasyonel izleme.
+
+Hedef Kullanıcı: Afet Koordinasyon Merkezleri (AKOM, AFAD vb.) ve saha komuta birimleri.
 
 🛠 Teknik Mimari ve Teknolojiler
-Proje, kritik durumlarda donanım kaynaklarını minimum düzeyde kullanarak maksimum performansı hedefleyen bir Thin-Client mimarisi üzerine kurulmuştur.
+Proje, kriz anlarında kesintisiz hizmet verebilmek adına Thin-Client (İnce İstemci) mimarisi üzerine inşa edilmiştir.
 
-Harita Motoru: Leaflet.js (Hafif ve genişletilebilir yapısı nedeniyle tercih edilmiştir).
+Harita Motoru: Leaflet.js (Hafif, modüler ve yüksek genişletilebilirlik).
 
-Coğrafi Veri Katmanı: ArcGIS World Imagery (Gerçek zamanlı uydu verisi entegrasyonu).
+Coğrafi Veri Katmanı: ArcGIS World Imagery (Gerçek zamanlı ve yüksek çözünürlüklü uydu entegrasyonu).
 
-Veri Görselleştirme: Dinamik poligon ve polyline algoritmaları ile zonlama (Zoning) ve rota planlama.
+Veri Görselleştirme: Dinamik poligon ve polyline algoritmaları ile desteklenen Zoning (Bölgeleme) ve rota planlama motoru.
 
-Arayüz (UI/UX): * Karanlık Mod: Göz yorgunluğunu minimize eden ve enerji tasarrufu sağlayan düşük fotonlu renk paleti.
+UI/UX Standartları:
 
-Tipografi: Operasyonel okunabilirliği yüksek Orbitron ve Rajdhani font sistemleri.
+Dark-Ops Interface: Göz yorgunluğunu minimize eden ve enerji tasarrufu sağlayan, düşük fotonlu renk paleti.
+
+Tipografi: Operasyonel okunabilirliği en üst düzeye çıkaran Orbitron ve Rajdhani font sistemleri.
 
 🛡 Temel Fonksiyonel Özellikler
-1. Senkronize Çift Panel Sistemi
-Sol panelde Bölgesel Hasar Analizi katmanı, sağ panelde ise Operasyonel Rota ve Lojistik katmanı yer alır. Panellerden birinde yapılan hareket (kaydırma/zoom), diğer panele anlık olarak aktarılır. Bu durum, hasar ve müdahale hattı arasındaki korelasyonu hızlandırır.
+
+1. Senkronize Çift Panel Sistemi (Dual-Pane Sync)
+   Operasyonel farkındalığı artırmak amacıyla sistem iki ana katmana ayrılmıştır:
+
+Sol Panel: Bölgesel Hasar Analizi ve Enkaz Durumu.
+
+Sağ Panel: Operasyonel Rota ve Lojistik Planlama.
+
+Özellik: Panellerden birinde yapılan Pan/Zoom hareketi, diğer panele aktarılır. Bu, hasar ve müdahale hattı arasındaki iletişimi hızlandırır.
 
 2. Akıllı Lojistik Katmanları
-Ana İkmall Hatları (Blue Route): Ağır vasıta ve yardım tırları için belirlenmiş yüksek kapasiteli yollar.
+   Güzergahlar, aracın tipine ve görev önceliğine göre dinamik olarak sınıflandırılır:
 
-Acil Müdahale Hatları (Green Route): Sadece ambulans ve kurtarma ekiplerine özel, dar ama optimize edilmiş geçiş rotaları.
+🔵 Ana İkmal Hatları (Blue Route): Ağır vasıta ve yardım tırları için yüksek kapasiteli yollar.
 
-3. Kritik Bölge Analizi (Zonlama)
-Kırmızı Bölge (Critical Zone): Enkaz yoğunluğu ve ikincil afet riski (yangın, gaz sızıntısı) taşıyan yüksek riskli poligonlar.
+🟢 Acil Müdahale Hatları (Green Route): Sadece ambulans ve hafif arama-kurtarma ekiplerine özel, optimize edilmiş geçiş rotaları.
 
-Yeşil Bölge (Safe Zone): Coğrafi olarak güvenli, altyapısı sağlam ve toplanmaya uygun alanlar.
+
+3. Kritik Bölge Analizi (Dynamic Zoning)
+🔴 Kırmızı Bölge (Critical Zone): Enkaz yoğunluğu, yangın veya gaz sızıntısı gibi ikincil risklerin bulunduğu yüksek riskli poligonlar.
+
+🟢 Yeşil Bölge (Safe Zone): Coğrafi olarak güvenli, altyapısı korunmuş ve toplu barınmaya uygun alanlar.
+
+🚀 Kurulum ve Çalıştırma
+Bash
+
+# Depoyu klonlayın
+
+git clone https://github.com/kullaniciadi/afet-terminal.git
+
+# Proje dizinine gidin
+
+cd afet-terminal
+
+# Bağımlılıkları yükleyin (Örnek npm kullanımı)
+
+npm install
+
+# Uygulamayı başlatın
+
+npm start
+
+📅 Yol Haritası (Roadmap)
+[ ] Gerçek zamanlı IoT sensör verilerinin haritaya entegrasyonu.
+
+[ ] İHA (UAV) görüntülerinin anlık olarak katman olarak eklenmesi.
+
+[ ] Çevrimdışı (Offline) çalışma modu için vektör tile desteği.
