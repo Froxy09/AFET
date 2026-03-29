@@ -1,71 +1,60 @@
 🛰️ A.F.E.T. | Analitik Fotogrametri ve Etki Takibi afet sonrası kritik ilk dakikalarda karar vericilere ve operasyonel komuta merkezlerine yüksek doğruluklu, düşük gecikmeli görsel veri sunmak amacıyla geliştirilmiş bir Karar Destek Sistemidir (DSS). Özellikle İstanbul odağında Marmara Bölgesi için optimize edilen bu terminal; lojistik hat analizi, enkaz bölgeleme ve güvenli alan koordinasyonunu tek bir merkezde birleştirir.
 
 📌 Proje Özeti
-Sistem, afet anındaki kaos ortamında veri kirliliğini eleyerek operatörün en doğru kararı en kısa sürede vermesini hedefler. Geleneksel ağır GIS yazılımlarının aksine, düşük donanım kaynaklarıyla maksimum performans sağlayan bir yapıya sahiptir.
+Seyrü Feza (AFET), deprem sonrasında kurtarma ekiplerinin sahada yaşadığı "bilgi körlüğü" problemini uzay teknolojileriyle çözen otonom bir karar destek platformudur. Sistemimiz; rasathanelerden gelen anlık sismik veriler ile yerli uydumuz İMECE ve Sentinel-1'den alınan görüntüleri yapay zekâ ile harmanlayarak enkaz altındaki yolları saniyeler içinde saptar. Bu hibrit veri füzyonu sayesinde, ekipleri tehlikelerden uzak tutarak doğrudan hedefe ulaştıran en güvenli "Altın Rota" dinamik olarak çizilir.
+## 🛠 Teknik Mimari ve Teknolojiler
 
-Odak Noktası: Lojistik hat analizi, dinamik zonlama ve eş zamanlı operasyonel izleme.
+Proje, kriz anlarında kesintisiz hizmet verebilmek adına *Thin-Client (İnce İstemci)* mimarisi üzerine inşa edilmiştir.
 
-Hedef Kullanıcı: Afet Koordinasyon Merkezleri (AKOM, AFAD vb.) ve saha komuta birimleri.
+| Bileşen            | Teknoloji              | Fonksiyon                                                                |
+| :----------------- | :--------------------- | :----------------------------------------------------------------------- |
+| *Harita Motoru*  | Leaflet.js ve windy.com  | Hafif, modüler ve yüksek genişletilebilirlik.                            |
+| *Coğrafi Veri*   | ArcGIS World Imagery | Gerçek zamanlı ve yüksek çözünürlüklü uydu entegrasyonu.                 |
+| *Görselleştirme* | Custom Zoning Engine | Dinamik poligon ve polyline algoritmaları ile desteklenen rota planlama. |
+| *Arayüz (UI)*    | Dark-Ops Interface   | Göz yorgunluğunu minimize eden düşük fotonlu renk paleti.                |
+| *Tipografi*      | Orbitron & Rajdhani  | Operasyonel okunabilirliği en üst düzeye çıkaran font sistemleri.        |
+| *Uydu Verileri*  | İMECE(TÜRKİYE)       |                                                                          |
 
-🛠 Teknik Mimari ve Teknolojiler
-Proje, kriz anlarında kesintisiz hizmet verebilmek adına Thin-Client (İnce İstemci) mimarisi üzerine inşa edilmiştir.
+---
 
-Harita Motoru: Leaflet.js (Hafif, modüler ve yüksek genişletilebilirlik), windy.com sayfaları.
+## 🛡 Temel Fonksiyonel Özellikler
 
-Coğrafi Veri Katmanı: ArcGIS World Imagery (Gerçek zamanlı ve yüksek çözünürlüklü uydu entegrasyonu).
+### 1. Senkronize Çift Panel Sistemi (Dual-Pane Sync)
 
-Veri Görselleştirme: Dinamik poligon ve polyline algoritmaları ile desteklenen Zoning (Bölgeleme) ve rota planlama motoru.
+Operasyonel farkındalığı artırmak amacıyla sistem iki ana katmana ayrılmıştır:
 
-UI/UX Standartları:
+- *Sol Panel:* Bölgesel Hasar Analizi ve Enkaz Durumu.
+- *Sağ Panel:* Operasyonel Rota ve Lojistik Planlama.
+- *Özellik:* Panellerden birinde yapılan Pan/Zoom hareketi, diğer panele otomatik aktarılır. Bu, hasar ve müdahale hattı arasındaki iletişimi hızlandırır.
 
-Dark-Ops Interface: Göz yorgunluğunu minimize eden ve enerji tasarrufu sağlayan, düşük fotonlu renk paleti.
+### 2. Akıllı Lojistik Katmanları
 
-Tipografi: Operasyonel okunabilirliği en üst düzeye çıkaran Orbitron ve Rajdhani font sistemleri.
+Güzergahlar, aracın tipine ve görev önceliğine göre dinamik olarak sınıflandırılır:
 
-🛡 Temel Fonksiyonel Özellikler
+- 🔵 *Ana İkmal Hatları (Blue Route):* Ağır vasıta ve yardım tırları için yüksek kapasiteli yollar.
+- 🟢 *Acil Müdahale Hatları (Green Route):* Sadece ambulans ve hafif arama-kurtarma ekiplerine özel, optimize edilmiş geçiş rotaları.
 
-1. Senkronize Çift Panel Sistemi (Dual-Pane Sync)
-   Operasyonel farkındalığı artırmak amacıyla sistem iki ana katmana ayrılmıştır:
+### 3. Kritik Bölge Analizi (Dynamic Zoning)
 
-Sol Panel: Bölgesel Hasar Analizi ve Enkaz Durumu.
+- 🔴 *Kırmızı Bölge (Critical Zone):* Enkaz yoğunluğu, yangın veya gaz sızıntısı gibi ikincil risklerin bulunduğu yüksek riskli poligonlar.
+- 🟢 *Yeşil Bölge (Safe Zone):* Coğrafi olarak güvenli, altyapısı korunmuş ve toplu barınmaya uygun alanlar.
 
-Sağ Panel: Operasyonel Rota ve Lojistik Planlama.
+---
 
-Özellik: Panellerden birinde yapılan Pan/Zoom hareketi, diğer panele aktarılır. Bu, hasar ve müdahale hattı arasındaki iletişimi hızlandırır.
+## Kurulum ve Çalıştırma
 
-2. Akıllı Lojistik Katmanları
-   Güzergahlar, aracın tipine ve görev önceliğine göre dinamik olarak sınıflandırılır:
+bash
+# 1. Depoyu klonlayın
+git clone https://github.com/Froxy09/AFET
 
-🔵 Ana İkmal Hatları (Blue Route): Ağır vasıta ve yardım tırları için yüksek kapasiteli yollar.
-
-🟢 Acil Müdahale Hatları (Green Route): Sadece ambulans ve hafif arama-kurtarma ekiplerine özel, optimize edilmiş geçiş rotaları.
-
-
-3. Kritik Bölge Analizi (Dynamic Zoning)
-🔴 Kırmızı Bölge (Critical Zone): Enkaz yoğunluğu, yangın veya gaz sızıntısı gibi ikincil risklerin bulunduğu yüksek riskli poligonlar.
-
-🟢 Yeşil Bölge (Safe Zone): Coğrafi olarak güvenli, altyapısı korunmuş ve toplu barınmaya uygun alanlar.
-
-🚀 Kurulum ve Çalıştırma
-Bash
-
-# Depoyu klonlayın
-
-git clone [https://github.com/kullaniciadi/afet-terminal.git](https://github.com/Froxy09/AFET)
-
-# Proje dizinine gidin
-
+# 2. Proje dizinine gidin
 cd afet-terminal
 
-# Bağımlılıkları yükleyin (Örnek npm kullanımı)
-
+# 3. Bağımlılıkları yükleyin (Örnek npm kullanımı)
 npm install
 
-# Uygulamayı başlatın
-
-npm start OR python -m http.server
-
-📅 Yol Haritası (Roadmap)
-[ ] Gerçek zamanlı IoT sensör verilerinin haritaya entegrasyonu.
-
+# 4. Uygulamayı başlatın
+npm start
+# VEYA basit bir python sunucusu ile:
+python -m http.server 8080
 [ ] Çevrimdışı (Offline) çalışma modu için vektör tile desteği.
