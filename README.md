@@ -1,5 +1,5 @@
 #AFET
-Gemini şunu dedi:
+
 GitHub üzerindeki A.F.E.T. (Afet Yönetimi ve Operasyonel Komuta Terminali) projen için profesyonel, siber güvenlik ve gömülü sistemler estetiğine (Cyberpunk/Military-grade) uygun bir README.md taslağı hazırladım.
 
 Bu taslak, paylaştığın HTML kodlarındaki görsel dilden ve teknik detaylardan (Leaflet.js, ArcGIS, siber veri akışı) ilham almıştır.
