@@ -1,63 +1,30 @@
-#AFET
+A.F.E.T. : Afet Yönetimi ve Operasyonel Komuta Terminali
+📌 Proje Özeti
+A.F.E.T. (Advanced Framework for Emergency Tracking), afet sonrası kritik dakikalarda karar vericilere (operasyonel komuta merkezleri) yüksek doğruluklu görsel veri sunmak amacıyla geliştirilmiş bir Karar Destek Sistemidir (DSS). İstanbul odaklı Marmara Bölgesi için optimize edilen bu terminal; lojistik hat analizi, enkaz bölgeleme ve güvenli alan koordinasyonu özelliklerini tek bir düşük gecikmeli arayüzde birleştirir.
 
-GitHub üzerindeki A.F.E.T. (Afet Yönetimi ve Operasyonel Komuta Terminali) projen için profesyonel, siber güvenlik ve gömülü sistemler estetiğine (Cyberpunk/Military-grade) uygun bir README.md taslağı hazırladım.
+🛠 Teknik Mimari ve Teknolojiler
+Proje, kritik durumlarda donanım kaynaklarını minimum düzeyde kullanarak maksimum performansı hedefleyen bir Thin-Client mimarisi üzerine kurulmuştur.
 
-Bu taslak, paylaştığın HTML kodlarındaki görsel dilden ve teknik detaylardan (Leaflet.js, ArcGIS, siber veri akışı) ilham almıştır.
+Harita Motoru: Leaflet.js (Hafif ve genişletilebilir yapısı nedeniyle tercih edilmiştir).
 
-🚀 A.F.E.T. :: Afet Yönetimi ve Operasyonel Komuta Terminali
-A.F.E.T. (Marmara Bölge Komuta Terminali), afet sonrası koordinasyon, lojistik rota takibi ve hasar analizi için tasarlanmış yüksek vizyonlu bir terminal arayüzüdür. Proje, özellikle Marmara Bölgesi (İstanbul merkezli) operasyonel süreçlerini dijitalleştirmeyi ve komuta merkezlerine anlık görsel veri sunmayı amaçlar.
+Coğrafi Veri Katmanı: ArcGIS World Imagery (Gerçek zamanlı uydu verisi entegrasyonu).
 
-🛠 Öne Çıkan Özellikler
-Çift Panelli Analiz Terminali: Bölgesel hasar analizi (Sol) ve Operasyonel rota takibi (Sağ) ekranlarının eş zamanlı (sekronize) çalışması.
+Veri Görselleştirme: Dinamik poligon ve polyline algoritmaları ile zonlama (Zoning) ve rota planlama.
 
-Dinamik Rota Takibi:
+Arayüz (UI/UX): * Karanlık Mod: Göz yorgunluğunu minimize eden ve enerji tasarrufu sağlayan düşük fotonlu renk paleti.
 
-🔵 Lacivert Hatlar: Ana ikmal ve lojistik yolları.
+Tipografi: Operasyonel okunabilirliği yüksek Orbitron ve Rajdhani font sistemleri.
 
-🟢 Yeşil Hatlar: Acil müdahale ve tahliye rotaları.
+🛡 Temel Fonksiyonel Özellikler
+1. Senkronize Çift Panel Sistemi
+Sol panelde Bölgesel Hasar Analizi katmanı, sağ panelde ise Operasyonel Rota ve Lojistik katmanı yer alır. Panellerden birinde yapılan hareket (kaydırma/zoom), diğer panele anlık olarak aktarılır. Bu durum, hasar ve müdahale hattı arasındaki korelasyonu hızlandırır.
 
-Risk Bölgeleme (Zonlama):
+2. Akıllı Lojistik Katmanları
+Ana İkmall Hatları (Blue Route): Ağır vasıta ve yardım tırları için belirlenmiş yüksek kapasiteli yollar.
 
-🔴 Kritik Enkaz Alanları: Yüksek riskli yıkım bölgelerinin poligonlarla işaretlenmesi.
+Acil Müdahale Hatları (Green Route): Sadece ambulans ve kurtarma ekiplerine özel, dar ama optimize edilmiş geçiş rotaları.
 
-🌳 Güvenli Toplanma Alanları: Tahliye sonrası güvenli noktaların belirlenmesi.
+3. Kritik Bölge Analizi (Zonlama)
+Kırmızı Bölge (Critical Zone): Enkaz yoğunluğu ve ikincil afet riski (yangın, gaz sızıntısı) taşıyan yüksek riskli poligonlar.
 
-Karanlık Mod & Cyber-UI: 'Orbitron' ve 'Rajdhani' fontları ile güçlendirilmiş, düşük ışıklı komuta merkezleri için optimize edilmiş yüksek kontrastlı arayüz.
-
-ArcGIS Uydu Entegrasyonu: Gerçek zamanlı dünya uydu görüntüleri üzerinde özel katman (Dark Masking) uygulaması.
-
-📸 Ekran Görüntüsü Tasarımı
-Terminal arayüzü, afet anında karar vericilerin dikkatini dağıtmayacak, sadece operasyonel veriye odaklanan bir yapıya sahiptir:
-
-Header: Gerçek zamanlı UTC saat akışı ve sistem durum göstergesi.
-
-Map: Leaflet.js tabanlı, sınırlandırılmış (Marmara odaklı) interaktif harita katmanları.
-
-🚀 Kurulum ve Kullanım
-Proje, herhangi bir sunucu gereksinimi duymadan (Client-side) çalışmaktadır.
-
-Depoyu klonlayın:
-
-Bash
-git clone https://github.com/Froxy09/A.F.E.T..git
-Proje klasörüne gidin.
-
-index.html dosyasını modern bir tarayıcıda açın.
-
-🧬 Teknik Altyapı
-Harita Motoru: Leaflet.js
-
-Harita Katmanı: ArcGIS World Imagery
-
-Tipografi: Google Fonts (Orbitron, Rajdhani, Share Tech Mono)
-
-Veri Yapısı: Operasyonel rotalar ve poligonlar JSON tabanlı koordinat dizileri (L.polyline, L.polygon) ile yönetilmektedir.
-
-🗺 Yol Haritası (Roadmap)
-[ ] Gerçek zamanlı deprem API entegrasyonu (AFAD/Kandilli).
-
-[ ] Gömülü sistemler (ESP32/Raspberry Pi) üzerinden gelen saha verilerinin (sıcaklık, nem, gaz) haritaya işlenmesi.
-
-[ ] Saha ekipleri için mobil uyumlu GPS takip arayüzü.
-
-[ ] WebSocket ile merkezi komuta odasından tüm terminallere anlık bildirim gönderimi.
+Yeşil Bölge (Safe Zone): Coğrafi olarak güvenli, altyapısı sağlam ve toplanmaya uygun alanlar.
