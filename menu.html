@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg: #010812;
-            --panel: rgba(2, 15, 31, 0.8);
+            --panel: rgba(2, 15, 31, 0.95);
             --border: #0a2a45;
             --accent: #00f2ff;
             --critical: #ff2d2d;
@@ -34,131 +34,114 @@
         }
 
         header {
-            height: 80px;
+            height: 70px;
             background: #000;
             border-bottom: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 30px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
             z-index: 100;
         }
 
-        .logo-area { display: flex; align-items: center; gap: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-box {
             background: var(--critical);
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-family: 'Orbitron';
             font-weight: 900;
             border: 2px solid #fff;
-            box-shadow: 0 0 15px var(--critical);
         }
-        .title { font-family: 'Orbitron'; letter-spacing: 4px; font-size: 1.2rem; }
+        .title { font-family: 'Orbitron'; letter-spacing: 2px; font-size: 1rem; }
 
-        /* --- GÜNCELLENEN GRID YAPISI --- */
         main {
             flex: 1;
             display: grid;
-            /* Ekranı 2 sütun ve 2 satıra böler */
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            gap: 20px;
-            padding: 20px;
-            overflow: hidden; /* Dışarı taşmayı engeller */
+            gap: 15px;
+            padding: 15px;
+            overflow: hidden;
         }
 
         .nav-card {
             background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-decoration: none;
             color: inherit;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 100%; /* Kartın grid hücresini tamamen doldurmasını sağlar */
+            overflow: hidden;
+            transition: 0.3s;
         }
 
-        .nav-card:hover {
-            border-color: var(--accent);
-            box-shadow: inset 0 0 20px var(--glow), 0 0 20px var(--glow);
-            transform: scale(1.01); /* Yerinden kaymadan hafif büyüme efekti */
-        }
+        .nav-card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--glow); }
 
         .card-header {
-            padding: 15px;
+            padding: 10px 15px;
             background: rgba(0, 242, 255, 0.1);
-            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .card-title { font-family: 'Orbitron'; font-size: 1rem; color: var(--accent); font-weight: bold; }
-        .card-status { font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--warning); }
+        .card-title { font-family: 'Orbitron'; font-size: 0.85rem; color: var(--accent); }
+        .card-status { font-family: 'Share Tech Mono'; font-size: 0.7rem; color: var(--warning); }
 
+        /* KRİTİK ALAN: Kart içeriği flex yapısı */
         .card-body {
-            padding: 20px;
+            padding: 12px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* İçeriği dikeyde ortalar */
-            gap: 15px;
+            gap: 10px;
+            min-height: 0; /* İçeriğin taşmasını engeller */
         }
 
-        .preview-img {
-            width: 100%;
-            flex: 0.8; /* Görsel alanını genişletir */
-            background: #051a2e;
+        /* Görsel Kutusu: Esnek (flex-grow) yapıldı */
+        .visual-frame {
+            flex: 1; /* Kalan boşluğu doldurur, metni itmez */
+            min-height: 100px; 
+            background: #051a2e center/cover no-repeat;
             border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Share Tech Mono';
-            color: #3a5b77;
             position: relative;
-            font-size: 1.2rem;
-            text-align: center;
+            display: flex;
+            align-items: flex-end;
         }
 
-        .preview-img::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none;
+        .overlay-label {
+            position: relative;
+            z-index: 5;
+            background: rgba(0, 242, 255, 0.8);
+            color: #000;
+            font-family: 'Share Tech Mono';
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
 
-        .card-desc { 
-            font-size: 1rem; 
-            color: #88a0b5; 
-            line-height: 1.5; 
-            max-width: 80%;
-            margin: 0 auto;
-            text-align: center;
+        /* Alt Yazı Alanı: Sabit yer kaplar */
+        .card-desc {
+            font-size: 0.85rem;
+            color: #b0c4d8;
+            line-height: 1.3;
+            height: auto;
+            flex-shrink: 0; /* Küçülmesini engeller */
         }
 
         #footer-info {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 280px;
-            background: rgba(1, 12, 26, 0.95);
-            border: 1px solid var(--border);
-            padding: 15px;
+            background: #000;
+            border-top: 1px solid var(--border);
+            padding: 5px 20px;
             font-family: 'Share Tech Mono';
-            font-size: 0.8rem;
-            pointer-events: none; /* Harita etkileşimini engellememesi için */
-            z-index: 200;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .blink { animation: blink 1s infinite; color: var(--critical); font-weight: bold; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .blink { animation: blink 1s infinite; color: var(--critical); }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } }
 
     </style>
 </head>
@@ -166,15 +149,10 @@
 
 <header>
   <div class="logo-area">
-    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-        <div class="logo-box">A.F.E.T.</div>
-        <div style="font-family: 'Share Tech Mono'; font-size: 0.7rem; color: var(--text); opacity: 0.7; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase;">
-            Analitik Fotogrametri ve Etki Takibi
-        </div>
-    </div>
+    <div class="logo-box">A.F.E.T.</div>
     <div class="title">TERMINAL // ANA KOMUTA PANELİ</div>
   </div>
-  <div id="clock" style="font-family:'Share Tech Mono'; font-size:1.5rem; color:var(--accent);">00:00:00 UTC</div>
+  <div id="clock" style="font-family:'Share Tech Mono'; color:var(--accent);">00:00:00 UTC</div>
 </header>
 
 <main>
@@ -184,7 +162,9 @@
       <div class="card-status">AKTİF</div>
     </div>
     <div class="card-body">
-      <div class="preview-img">BİNA YATMA ANALİZİ MODÜLÜ</div>
+      <div class="visual-frame" style="background-image: url('image_1.jpeg');">
+          <div class="overlay-label">BİNA YATMA ANALİZİ MODÜLÜ</div>
+      </div>
       <p class="card-desc">Binaların eğim dereceleri ve domino etkisi simülasyonlarını içeren operasyonel harita sistemi.</p>
     </div>
   </a>
@@ -195,8 +175,10 @@
       <div class="card-status">AKTİF</div>
     </div>
     <div class="card-body">
-      <div class="preview-img">TERMAL RADYASYON VERİSİ</div>
-      <p class="card-desc">GÖKTÜRK-1 ve NASA FIRMS verileriyle entegre termal erken uyarı ve bariyer hattı planlama.</p>
+      <div class="visual-frame" style="background-image: url('deprem.jpeg');">
+          <div class="overlay-label">ISI HARİTASI TAKİBİ</div>
+      </div>
+      <p class="card-desc">İMECE ve SENTİNEL-1 verileriyle entegre termal erken uyarı ve bariyer hattı planlama.</p>
     </div>
   </a>
 
@@ -206,40 +188,35 @@
       <div class="card-status">GÜNCEL</div>
     </div>
     <div class="card-body">
-      <div class="preview-img">ACİL MÜDAHALE YOLLARI</div>
+      <div class="visual-frame" style="background-image: url('rota.jpeg');">
+          <div class="overlay-label">YOLLAK VE ENKAZ TAKİBİ</div>
+      </div>
       <p class="card-desc">Enkaz bölgeleri, güvenli toplanma alanları ve acil ikmal yollarının gerçek zamanlı takibi.</p>
     </div>
   </a>
 
   <a href="uydu_durumu.html" class="nav-card">
     <div class="card-header">
-      <div class="card-title">UYDU DURUMU VE METEOROLOJİK VERİLER</div>
-      <div class="card-status" style="color:var(--accent)">BAĞLI</div>
+      <div class="card-title">UYDU DURUMU</div>
+      <div class="card-status">BAĞLI</div>
     </div>
     <div class="card-body">
-      <div class="preview-img">UYDU GÖRÜNTÜLERİ VE TELEMETRİ</div>
-      <p class="card-desc">Aktif uydu geçişleri, görüntüleme kuyruğu ve haberleşme link durumlarının takibi.</p>
+      <div class="visual-frame" style="background-image: url('telemetri.jpeg'); opacity: 0.6;">
+          <div class="overlay-label">TELEMETRİ VERİSİ</div>
+      </div>
+      <p class="card-desc">Aktif uydu geçişleri ve haberleşme link durumlarının anlık takibi.</p>
     </div>
   </a>
 </main>
 
-<div id="footer-info">
-  <div style="color:var(--accent); border-bottom:1px solid var(--border); margin-bottom:10px; padding-bottom:5px;">SİSTEM DURUMU</div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span>BAĞLANTI:</span> <span style="color:#00ff88">GÜVENLİ (SSL)</span>
-  </div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-    <span>VERİ HATTI:</span> <span>KAF - KUZEY KOL</span>
-  </div>
-  <div style="display:flex; justify-content:space-between;">
-    <span>UYARI:</span> <span class="blink">SİSMİK HAREKETLİLİK</span>
-  </div>
-</div>
+<footer id="footer-info">
+  <div>SİSTEM DURUMU: <span style="color:#00ff88">GÜVENLİ</span></div>
+  <div class="blink">KRİTİK UYARI: SİSMİK HAREKETLİLİK TESPİT EDİLDİ</div>
+</footer>
 
 <script>
   function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR') + " UTC";
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR') + " UTC";
   }
   setInterval(updateClock, 1000);
   updateClock();
