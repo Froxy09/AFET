@@ -54,11 +54,10 @@ git clone https://github.com/Froxy09/AFET
 # 2. Proje dizinine gidin
 cd afet-terminal
 
-# 3. Bağımlılıkları yükleyin (Örnek npm kullanımı)
+# 3. Bağımlılıkları yükleyin
 npm install
 
 # 4. Uygulamayı başlatın
 npm start
 # VEYA basit bir python sunucusu ile:
 python -m http.server 8080
-[ ] Çevrimdışı (Offline) çalışma modu için vektör tile desteği.
