@@ -154,6 +154,37 @@
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--border); }
+
+        /* --- YENİ CSS: Görüntü Paneli Stilleri --- */
+        .image-module-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Taşmaları önler */
+            position: relative;
+        }
+
+        .image-module-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* En boy oranını korur */
+            display: block;
+        }
+
+        /* Siber estetik için tarama çizgileri efekti (opsiyonel) */
+        .image-module-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -181,13 +212,15 @@
             <div class="split-row">
                 <div class="panel sub-panel">
                     <div class="p-title">03 // GÖRÜNTÜ İŞLEME</div>
-                    <div id="uploaded-image" style="flex:1; display:flex; align-items:center; justify-content:center; border: 1px dashed var(--border); color:#444;">Görüntü bekleniyor...</div>
-                </div>
+                    <div id="uploaded-image-panel" class="image-module-wrapper">
+                        <img src="detect.jpeg" alt="Sistem Analiz Görüntüsü">
+                    </div>
+                    </div>
                 <div class="panel sub-panel">
                     <div class="p-title">04 // ANALİZ RAPORU</div>
                     <div class="status-badge">✓ ÇİFT AŞAMALI DOĞRULAMA AKTİF</div>
                     <div id="deprem-detay" style="font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.6; margin-top: 10px;">
-                        <p style="color: var(--cyan);">[SİSTEM HAZIR]</p>
+                        <p style="color: var(--cyan);">[]</p>
                     </div>
                 </div>
             </div>
@@ -227,7 +260,7 @@
             [[41.02442, 28.95569], [41.02487, 28.95518], [41.02559, 28.95404], [41.02351, 28.95454]], // NEW_CRITICAL_ZONE_6
             [[41.00105, 28.92975], [40.99744, 28.92988], [40.99861, 28.92345], [41.00157, 28.92605]], // NEW_CRITICAL_ZONE_7
             [[41.00839, 28.93195], [41.00696, 28.93566], [41.00779, 28.92577], [41.01079, 28.92798]], // critical_zone
-            [[41.02208, 28.94434], [41.01871, 28.94639], [41.01768, 28.94161], [41.01982, 28.94040]]  // critical_zone_8
+            [[41.02208, 28.94434], [41.01871, 28.94639], [41.01768, 28.94161], [41.01982, 28.94040]]  // critical_zone_8
         ];
 
         // Güvenli Bölgeler Listesi
@@ -242,7 +275,7 @@
             [[41.01848, 28.94947], [41.02008, 28.94817], [41.02093, 28.95000], [41.01952, 28.95137]], // safe_zone
             [[41.00588, 28.94216], [41.00541, 28.94188], [41.00493, 28.93828], [41.00493, 28.93815]], // safe_zone_6
             [[41.01507, 28.95166], [41.01581, 28.95338], [41.01674, 28.95455], [41.01581, 28.95515]], // safe_zone_7
-            [[41.01902, 28.93654], [41.01821, 28.93638], [41.01696, 28.93828], [41.01747, 28.93875]]  // safe_zone_8
+            [[41.01902, 28.93654], [41.01821, 28.93638], [41.01696, 28.93828], [41.01747, 28.93875]]  // safe_zone_8
         ];
 
         // Haritaya Çiz
