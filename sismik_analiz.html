@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A.F.E.T. :: Operasyonel Terminal v9.1 (Geri Dönüş Modüllü)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-root: #010812; --bg-panel: #020f1f; --border: #0a2a45;
+      --accent: #00f2ff; --critical: #ff2d2d; --success: #00ff88;
+      --warning: #ffaa00; --text-primary: #e0f7ff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { height: 100vh; overflow: hidden; background: var(--bg-root); color: var(--text-primary); font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; }
+    
+    #header { height: 8vh; border-bottom: 2px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #00060f; }
+    #main { display: flex; flex: 1; overflow: hidden; }
+    
+    /* Geri Dön Butonu Stili */
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 4px 12px;
+      font-family: 'Share Tech Mono';
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .back-btn:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .col-left { width: 25%; border-right: 1px solid var(--border); background: var(--bg-panel); display: flex; flex-direction: column; }
+    .col-center { flex: 1; position: relative; }
+    
+    .col-header { padding: 10px 15px; background: #010812; border-bottom: 2px solid var(--border); font-family: 'Orbitron'; font-size: 0.7rem; color: var(--accent); letter-spacing: 1px; }
+    #map { width: 100%; height: 100%; background: #010812; }
+    
+    .header-logo { background: var(--critical); padding: 5px 12px; font-family: 'Orbitron'; font-weight: 900; border: 2px solid #fff; margin-right: 15px; font-size: 1.1rem; }
+    #clock { font-family: 'Share Tech Mono'; color: var(--accent); font-size: 1.2rem; }
+    
+    .stat-box { padding: 15px; border-bottom: 1px solid var(--border); }
+    .stat-row { display: flex; justify-content: space-between; font-family: 'Share Tech Mono'; font-size: 0.8rem; margin-bottom: 8px; }
+    .stat-val { color: var(--warning); font-weight: bold; }
+    
+    #criteria-panel { flex: 1; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.8rem; overflow-y: auto; background: rgba(0,0,0,0.3); }
+    .crit-item { margin-bottom: 12px; border-left: 2px solid var(--border); padding-left: 10px; }
+    .crit-label { color: #5588aa; display: block; font-size: 0.7rem; }
+    .crit-value { color: var(--text-primary); font-size: 0.9rem; }
+
+    #legend-overlay {
+      position: absolute; bottom: 20px; right: 20px; width: 260px;
+      background: rgba(1, 12, 26, 0.9); border: 1px solid var(--accent);
+      padding: 12px; z-index: 3000; border-radius: 4px; backdrop-filter: blur(8px);
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; margin-bottom: 5px; font-family: 'Share Tech Mono'; }
+    .color-box { width: 10px; height: 10px; border-radius: 2px; }
+    
+    .bina-noktasi { background: #fff; border: 1px solid var(--accent); border-radius: 50%; box-shadow: 0 0 6px var(--accent); cursor: pointer; }
+    .leaflet-popup-content-wrapper { background: transparent !important; box-shadow: none !important; }
+  </style>
+</head>
+<body>
+
+<header id="header">
+  <div style="display:flex; align-items:center;">
+    <a href="/menu.html" class="back-btn">
+      <span>&lt;</span> GERİ DÖN
+    </a>
+    <div class="header-logo">A.F.E.T.</div>
+    <div style="font-family:'Orbitron'; font-size: 0.9rem; letter-spacing: 1px;">OPERASYONEL TERMİNAL // <span style="color:var(--accent)">V9.1</span></div>
+  </div>
+  <div id="clock">00:00:00 UTC</div>
+</header>
+
+<div id="main">
+  <div class="col-left">
+    <div class="col-header">SİSMİK VERİ KARTI</div>
+    <div class="stat-box">
+      <div class="stat-row"><span>MAGNITUDE:</span> <span class="stat-val">Mw 7.2</span></div>
+      <div class="stat-row"><span>FİLTRE:</span> <span class="stat-val">Eğim > 4° Aktif</span></div>
+    </div>
+    
+    <div class="col-header">YAPI ANALİZ KRİTERLERİ</div>
+    <div id="criteria-panel">
+      <div style="color:#444; text-align:center; margin-top:50px;">LÜTFEN ANALİZ İÇİN HARİTADAN BİR NOKTA SEÇİNİZ...</div>
+    </div>
+  </div>
+  
+  <div class="col-center">
+    <div id="map"></div>
+    <div id="legend-overlay">
+      <div style="font-family:'Orbitron'; font-size:0.7rem; color:var(--accent); margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:4px;">ANALİZ GÖSTERGESİ</div>
+      <div class="legend-item"><div class="color-box" style="background: var(--critical);"></div><span>İNSAN BULUNMA İHTİTMALİ OLAN RİSKLİ BÖLGELERİN ISI HARİTASI</span></div>
+      <div class="legend-item"><div style="width:10px; height:4px; background:var(--warning);"></div><span>EĞİM VEKTÖRÜ (Sadece >4°)</span></div>
+      <div class="legend-item"><div class="color-box" style="background: #fff; border:1px solid var(--accent);"></div><span>STABİL YAPI (<4°)</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- KRİTER VE NOKTA ÜRETİCİ ---
+function getCriteria(slope) {
+    const soilTypes = ["Alüvyal (Gevşek)", "Killi / Kumlu", "Kaya (Sağlam)", "Yapay Dolgu"];
+    const age = Math.floor(Math.random() * 50) + 1;
+    return [
+        { label: "ZEMİN SINIFI", val: slope > 30 ? soilTypes[0] : (slope < 10 ? soilTypes[2] : soilTypes[1]) },
+        { label: "SIVILAŞMA POTANSİYELİ", val: slope > 25 ? "%85 (Kritik)" : "%12 (Düşük)" },
+        { label: "BİNA YAŞI", val: age + " Yıl" }
+    ];
+}
+
+function generatePoints(center, count, maxSlope) {
+    let pts = [];
+    for(let i=0; i<count; i++) {
+        const offsetLat = (Math.random() - 0.5) * 0.012;
+        const offsetLng = (Math.random() - 0.5) * 0.012;
+        const slope = Math.floor(Math.random() * (maxSlope + 1));
+        
+        let color = "var(--accent)";
+        if (slope > 35) color = "var(--critical)";
+        else if (slope >= 20) color = "var(--warning)";
+
+        pts.push({
+            coords: [center[0] + offsetLat, center[1] + offsetLng],
+            slope: slope,
+            color: color,
+            dir: 160 + (Math.random() * 60),
+            criteria: getCriteria(slope),
+            id: "ANL-" + Math.random().toString(36).substr(2, 4).toUpperCase()
+        });
+    }
+    return pts;
+}
+
+const BUILDINGS = [
+    ...generatePoints([41.012, 28.955], 80, 45), 
+    ...generatePoints([41.008, 28.975], 60, 45), 
+    ...generatePoints([41.020, 28.940], 50, 25)
+];
+
+// --- HARİTA ---
+const map = L.map('map', { center: [41.012, 28.955], zoom: 14, zoomControl: false });
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+
+const heatPoints = BUILDINGS.map(b => [b.coords[0], b.coords[1], 0.5]);
+L.heatLayer(heatPoints, {
+    radius: 35, blur: 20, maxZoom: 15,
+    gradient: {0.4: 'blue', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red'}
+}).addTo(map);
+
+const layerGroup = L.layerGroup().addTo(map);
+
+function showCriteria(b) {
+    const panel = document.getElementById('criteria-panel');
+    let html = `<div style="color:var(--accent); font-size:1.1rem; margin-bottom:15px; border-bottom:1px solid var(--border)">ID: ${b.id}</div>`;
+    html += `<div class="crit-item"><span class="crit-label">EĞİM DURUMU</span><span class="crit-value" style="color:${b.color}">${b.slope}° ${b.slope < 4 ? '(STABİL)' : '(AKTİF)'}</span></div>`;
+    b.criteria.forEach(c => {
+        html += `<div class="crit-item"><span class="crit-label">${c.label}</span><span class="crit-value">${c.val}</span></div>`;
+    });
+    panel.innerHTML = html;
+}
+
+function render() {
+    layerGroup.clearLayers();
+    BUILDINGS.forEach(b => {
+        if (b.slope >= 4) {
+            const rad = b.dir * Math.PI / 180;
+            const end = [b.coords[0] + (0.0005 * Math.cos(rad)), b.coords[1] + (0.0005 * Math.sin(rad))];
+            L.polyline([b.coords, end], { color: b.color, weight: 5, opacity: 0.8 }).addTo(layerGroup);
+        }
+        const marker = L.marker(b.coords, { 
+            icon: L.divIcon({ className: 'bina-noktasi', iconSize: [8, 8], iconAnchor: [4, 4] }) 
+        }).addTo(layerGroup);
+        marker.on('click', () => showCriteria(b));
+    });
+}
+
+setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR') + " UTC"; }, 1000);
+render();
+</script>
+</body>
+</html>

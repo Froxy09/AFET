@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>A.F.E.T. | İstanbul Stratejik Analiz</title>
+    <style>
+        :root { --bg: #050a14; --panel: #0b1526; --neon: #ff6600; --cyan: #00f2ff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            height: 100vh; 
+            width: 100vw;
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        
+        header { 
+            height: 50px; 
+            padding: 0 15px; 
+            background: #000; 
+            border-bottom: 1px solid var(--neon); 
+            display: flex; 
+            align-items: center;
+            z-index: 100;
+        }
+
+        /* Geri Dön Butonu Stili */
+        .nav-back-btn {
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 20px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .nav-back-btn:hover {
+            background: var(--neon);
+            color: #000;
+            box-shadow: 0 0 10px var(--neon);
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+            align-items: center;
+        }
+
+        main { 
+            flex: 1; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            grid-template-rows: 1fr 1fr; 
+            gap: 8px; 
+            padding: 8px; 
+            min-height: 0;
+        }
+        
+        .panel { 
+            background: var(--panel); 
+            border: 1px solid rgba(0, 242, 255, 0.1); 
+            border-radius: 4px; 
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .p-header { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            z-index: 50; 
+            background: rgba(0,0,0,0.85); 
+            padding: 4px 12px; 
+            font-size: 10px; 
+            border-radius: 2px; 
+            border-left: 3px solid var(--neon); 
+            color: #fff;
+            pointer-events: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        #clock { font-family: monospace; color: var(--cyan); font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/menu.html" class="nav-back-btn">« GERİ DÖN</a>
+        
+        <div class="header-info">
+            <div style="color: var(--neon); font-size: 14px; font-weight: bold;">İSTANBUL OPERASYON MERKEZİ</div>
+            <div id="clock">00:00:00</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="panel">
+            <div class="p-header">UYDU // RÜZGAR AKIŞI</div>
+            <iframe src="https://www.windy.com/embed2.html?lat=41.008&lon=28.978&zoom=11&level=surface&overlay=wind&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+        </div>
+        
+        <div class="panel">
+            <div class="p-header">UYDU // YAĞIŞ & ŞİMŞEK</div>
+            <iframe src="https://www.windy.com/embed2.html?lat=41.008&lon=28.978&zoom=11&level=surface&overlay=radar&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+        </div>
+        
+        <div class="panel">
+            <div class="p-header">UYDU // BULUT YOĞUNLUĞU</div>
+            <iframe src="https://www.windy.com/embed2.html?lat=41.008&lon=28.978&zoom=10&level=surface&overlay=clouds&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+        </div>
+        
+        <div class="panel">
+            <div class="p-header">UYDU // TERMAL ANALİZ</div>
+            <iframe src="https://www.windy.com/embed2.html?lat=41.008&lon=28.978&zoom=10&level=surface&overlay=temp&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+        </div>
+    </main>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('tr-TR');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

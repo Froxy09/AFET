@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.F.E.T. | Deprem & Hasar Analiz Paneli</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+    <style>
+        :root[data-theme="dark"] {
+            --bg-root: #010812; 
+            --bg-panel: #020f1f; 
+            --border: #0a2a45;
+            --neon: #ff6600; /* 5.0 altı için turuncu */
+            --cyan: #00f2ff;
+            --critical: #ff2d2d; /* 5.0 ve üstü için kırmızı */
+            --success: #00ff88;
+            --text-primary: #e0f7ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
+
+        body {
+            background-color: var(--bg-root);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 9999;
+            background: rgba(2, 15, 31, 0.8);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 8px 15px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-back:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--cyan);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+            padding: 10px;
+            margin-top: 50px;
+            height: calc(100vh - 50px);
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            position: relative;
+            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .p-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        #mapDamage {
+            flex: 1;
+            min-height: 0; 
+            background: #010812 !important;
+            border-radius: 4px;
+        }
+
+        #deprem-listesi {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .deprem-item {
+            background: rgba(0,0,0,0.3);
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--neon);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .deprem-item:hover { background: rgba(0, 242, 255, 0.1); }
+        
+        /* 5.0 ve Üstü Kırmızı Stil */
+        .deprem-item.critical { 
+            border-left: 3px solid var(--critical); 
+            background: rgba(255, 45, 45, 0.1); 
+        }
+        .critical .deprem-mag { color: var(--critical) !important; }
+
+        .deprem-mag {
+            color: var(--neon);
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 10px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .split-row { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .sub-panel { flex: 1; }
+
+        .status-badge {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); }
+    </style>
+</head>
+<body>
+
+    <a href="/menu.html" class="nav-back"><span>«</span> ANA MENÜ</a>
+
+    <main>
+        <section class="column">
+            <div class="panel" style="height: 100%;">
+                <div class="p-title" style="color: var(--neon);">01 // BÖLGESEL HASAR ANALİZİ</div>
+                <div id="mapDamage"></div>
+            </div>
+        </section>
+
+        <section class="column">
+            <div class="panel" style="height: 100%;">
+                <div class="p-title">02 // SİSMİK AKTİVİTE TERMİNALİ</div>
+                <div id="deprem-listesi">
+                    <p style="text-align:center; padding:20px; color:var(--cyan);">Veriler senkronize ediliyor...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="column">
+            <div class="split-row">
+                <div class="panel sub-panel">
+                    <div class="p-title">03 // GÖRÜNTÜ İŞLEME</div>
+                    <div id="uploaded-image" style="flex:1; display:flex; align-items:center; justify-content:center; border: 1px dashed var(--border); color:#444;">Görüntü bekleniyor...</div>
+                </div>
+                <div class="panel sub-panel">
+                    <div class="p-title">04 // ANALİZ RAPORU</div>
+                    <div class="status-badge">✓ ÇİFT AŞAMALI DOĞRULAMA AKTİF</div>
+                    <div id="deprem-detay" style="font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.6; margin-top: 10px;">
+                        <p style="color: var(--cyan);">[SİSTEM HAZIR]</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- HARİTA BAŞLATMA ---
+        const mapDamage = L.map('mapDamage', {
+            center: [41.008, 28.970], 
+            zoom: 13, 
+            zoomControl: false 
+        });
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(mapDamage);
+
+        // Koyu Maskeleme
+        const worldCoords = [[-90, -180], [-90, 180], [90, 180], [90, -180]];
+        const marmaraHole = [[39.8, 26.0], [39.8, 31.0], [42.2, 31.0], [42.2, 26.0]];
+        L.polygon([worldCoords, marmaraHole], { fillColor: '#010812', fillOpacity: 0.7, color: '#010812', weight: 0, interactive: false }).addTo(mapDamage);
+
+        // --- HASAR ANALİZ VERİLERİ (POLİGONLAR) ---
+        const redZoneOpts = { color: '#ff2d2d', fillColor: '#ff2d2d', fillOpacity: 0.6, weight: 1.5 };
+        const greenZoneOpts = { color: '#00ff88', fillColor: '#00ff88', fillOpacity: 0.5, weight: 1.5 };
+
+        // Kritik Bölgeler Listesi
+        const CRITICAL_ZONES = [
+            [[41.00894, 28.97824], [41.00939, 28.97733], [41.00985, 28.97779]],
+            [[41.00949, 28.98124], [41.00985, 28.98014], [41.00998, 28.98134], [41.00957, 28.98175]],
+            [[41.01104, 28.97490], [41.01184, 28.97582], [41.01085, 28.97739], [41.01015, 28.97640]],
+            [[41.01415, 28.97643], [41.01463, 28.97560], [41.01346, 28.97493], [41.01328, 28.97635]],
+            [[41.01330, 28.96803], [41.01396, 28.96996], [41.01568, 28.96971], [41.01585, 28.96606]], // NEW_CRITICAL_ZONE_1
+            [[41.01167, 28.96510], [41.01264, 28.96468], [41.01233, 28.96280], [41.01112, 28.96350]], // NEW_CRITICAL_ZONE_4
+            [[41.00880, 28.96744], [41.00794, 28.96741], [41.00745, 28.96893], [41.00750, 28.97076], [41.00830, 28.97047]], // NEW_CRITICAL_ZONE_5
+            [[41.00473, 28.93286], [41.00419, 28.92835], [41.00585, 28.92816], [41.00673, 28.93264]], // NEW_CRITICAL_ZONE_2
+            [[41.00945, 28.95758], [41.00929, 28.96385], [41.00578, 28.96218], [41.00596, 28.95605]], // NEW_CRITICAL_ZONE_3
+            [[41.02442, 28.95569], [41.02487, 28.95518], [41.02559, 28.95404], [41.02351, 28.95454]], // NEW_CRITICAL_ZONE_6
+            [[41.00105, 28.92975], [40.99744, 28.92988], [40.99861, 28.92345], [41.00157, 28.92605]], // NEW_CRITICAL_ZONE_7
+            [[41.00839, 28.93195], [41.00696, 28.93566], [41.00779, 28.92577], [41.01079, 28.92798]], // critical_zone
+            [[41.02208, 28.94434], [41.01871, 28.94639], [41.01768, 28.94161], [41.01982, 28.94040]]  // critical_zone_8
+        ];
+
+        // Güvenli Bölgeler Listesi
+        const SAFE_ZONES = [
+            [[41.01053, 28.94820], [41.01238, 28.94537], [41.01165, 28.94134], [41.01008, 28.94836]], // NEW_SAFE_ZONE_7
+            [[41.00471, 28.96934], [41.00489, 28.96905], [41.00481, 28.96824], [41.00417, 28.96896]], // NEW_SAFE_ZONE_TRIANGLE
+            [[41.01088, 28.93374], [41.00998, 28.93368], [41.00990, 28.93537], [41.01083, 28.93525]], // SAFE_ZONE_1
+            [[41.00647, 28.93457], [41.00583, 28.93447], [41.00586, 28.93424], [41.00637, 28.93408]], // SAFE_ZONE_3
+            [[41.01327, 28.95764], [41.01480, 28.95448], [41.01566, 28.95594], [41.01469, 28.95776]], // SAFE_ZONE_4
+            [[41.01406, 28.98069], [41.01327, 28.98244], [41.01083, 28.97869]], // SAFE_ZONE_WHATSAPP
+            [[41.02670, 28.95015], [41.02625, 28.94885], [41.02533, 28.94953], [41.02594, 28.95086]], // SAFE_ZONE_5
+            [[41.01848, 28.94947], [41.02008, 28.94817], [41.02093, 28.95000], [41.01952, 28.95137]], // safe_zone
+            [[41.00588, 28.94216], [41.00541, 28.94188], [41.00493, 28.93828], [41.00493, 28.93815]], // safe_zone_6
+            [[41.01507, 28.95166], [41.01581, 28.95338], [41.01674, 28.95455], [41.01581, 28.95515]], // safe_zone_7
+            [[41.01902, 28.93654], [41.01821, 28.93638], [41.01696, 28.93828], [41.01747, 28.93875]]  // safe_zone_8
+        ];
+
+        // Haritaya Çiz
+        CRITICAL_ZONES.forEach(z => L.polygon(z, redZoneOpts).addTo(mapDamage));
+        SAFE_ZONES.forEach(z => L.polygon(z, greenZoneOpts).addTo(mapDamage));
+
+        // --- DEPREM VERİLERİ ÇEKME SİSTEMİ ---
+        async function fetchEarthquakes() {
+            const listeContainer = document.getElementById('deprem-listesi');
+            
+            const sabitDepremler = `
+                <div class="deprem-item critical" onclick="detayGoster({title:'İSTANBUL (MARMARA DENİZİ)', mag:'7.2', date:'2026.03.29 04:30', depth:'10.5', coords:[41.006860, 28.976349]})">
+                    <div>
+                        <span class="deprem-mag">7.2</span>
+                        <strong style="color: #fff;">İSTANBUL (MARMARA DENİZİ)</strong>
+                    </div>
+                    <div style="font-size: 11px; color: #ff2d2d; margin-top: 5px; font-weight:bold;">Tarih: 2026.03.29 04:30 | [ANA ŞOK]</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('https://api.orhanaydogdu.com.tr/deprem/kandilli/live');
+                const data = await response.json();
+                let dinamikIcerik = "";
+
+                data.result.slice(0, 20).forEach(eq => {
+                    // 5.0 ve Üstü Kontrolü
+                    const isCritical = parseFloat(eq.mag) >= 5.0 ? 'critical' : '';
+                    
+                    dinamikIcerik += `
+                        <div class="deprem-item ${isCritical}" onclick="detayGoster({title:'${eq.title}', mag:'${eq.mag}', date:'${eq.date}', depth:'${eq.depth}', coords:[${eq.geojson.coordinates[1]}, ${eq.geojson.coordinates[0]}]})">
+                            <div>
+                                <span class="deprem-mag">${eq.mag}</span>
+                                <strong style="color: #fff;">${eq.title}</strong>
+                            </div>
+                            <div style="font-size: 11px; color: #888; margin-top: 5px;">Tarih: ${eq.date} | Derinlik: ${eq.depth}km</div>
+                        </div>
+                    `;
+                });
+                listeContainer.innerHTML = sabitDepremler + dinamikIcerik;
+            } catch (e) {
+                listeContainer.innerHTML = sabitDepremler + '<p style="color:red; padding:10px;">Bağlantı Hatası: Veriler güncellenemiyor.</p>';
+            }
+        }
+
+        function detayGoster(d) {
+            const detay = document.getElementById('deprem-detay');
+            const color = parseFloat(d.mag) >= 5.0 ? 'var(--critical)' : 'var(--neon)';
+            
+            detay.innerHTML = `
+                <p style="color: ${color}">> ODAK: ${d.title}</p>
+                <p style="color: ${color}">> BÜYÜKLÜK: ${d.mag} MW</p>
+                <p>> DERİNLİK: ${d.depth} KM</p>
+                <p>> KOORDİNAT: ${d.coords[0]} / ${d.coords[1]}</p>
+                <p style="color: var(--success); margin-top: 5px;">> DURUM: VERİ DOĞRULANDI</p>
+            `;
+            
+            // İstanbul/Marmara ise haritayı oraya odakla
+            const titleUpper = d.title.toUpperCase();
+            if (titleUpper.includes("İSTANBUL") || titleUpper.includes("MARMARA")) {
+                mapDamage.flyTo([d.coords[0], d.coords[1]], 14, { animate: true, duration: 1.5 });
+            }
+        }
+
+        // Başlat
+        fetchEarthquakes();
+        setInterval(fetchEarthquakes, 60000); // 1 dakikada bir güncelle
+    </script>
+</body>
+</html>

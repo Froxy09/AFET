@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.F.E.T. // ANA KOMUTA MERKEZİ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #010812;
+            --panel: rgba(2, 15, 31, 0.8);
+            --border: #0a2a45;
+            --accent: #00f2ff;
+            --critical: #ff2d2d;
+            --warning: #ffaa00;
+            --text: #e0f7ff;
+            --glow: rgba(0, 242, 255, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                linear-gradient(rgba(10, 42, 69, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 42, 69, 0.2) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            height: 80px;
+            background: #000;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 20px; }
+        .logo-box {
+            background: var(--critical);
+            padding: 10px 20px;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px var(--critical);
+        }
+        .title { font-family: 'Orbitron'; letter-spacing: 4px; font-size: 1.2rem; }
+
+        /* --- GÜNCELLENEN GRID YAPISI --- */
+        main {
+            flex: 1;
+            display: grid;
+            /* Ekranı 2 sütun ve 2 satıra böler */
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden; /* Dışarı taşmayı engeller */
+        }
+
+        .nav-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Kartın grid hücresini tamamen doldurmasını sağlar */
+        }
+
+        .nav-card:hover {
+            border-color: var(--accent);
+            box-shadow: inset 0 0 20px var(--glow), 0 0 20px var(--glow);
+            transform: scale(1.01); /* Yerinden kaymadan hafif büyüme efekti */
+        }
+
+        .card-header {
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.1);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title { font-family: 'Orbitron'; font-size: 1rem; color: var(--accent); font-weight: bold; }
+        .card-status { font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--warning); }
+
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* İçeriği dikeyde ortalar */
+            gap: 15px;
+        }
+
+        .preview-img {
+            width: 100%;
+            flex: 0.8; /* Görsel alanını genişletir */
+            background: #051a2e;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Share Tech Mono';
+            color: #3a5b77;
+            position: relative;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .preview-img::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .card-desc { 
+            font-size: 1rem; 
+            color: #88a0b5; 
+            line-height: 1.5; 
+            max-width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #footer-info {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 280px;
+            background: rgba(1, 12, 26, 0.95);
+            border: 1px solid var(--border);
+            padding: 15px;
+            font-family: 'Share Tech Mono';
+            font-size: 0.8rem;
+            pointer-events: none; /* Harita etkileşimini engellememesi için */
+            z-index: 200;
+        }
+
+        .blink { animation: blink 1s infinite; color: var(--critical); font-weight: bold; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-box">A.F.E.T.</div>
+    <div class="title">TERMINAL // ANA KOMUTA PANELİ</div>
+  </div>
+  <div id="clock" style="font-family:'Share Tech Mono'; font-size:1.5rem; color:var(--accent);">00:00:00 UTC</div>
+</header>
+
+<main>
+  <a href="sismik_analiz.html" class="nav-card">
+    <div class="card-header">
+      <div class="card-title">SİSMİK ANALİZ</div>
+      <div class="card-status">AKTİF</div>
+    </div>
+    <div class="card-body">
+      <div class="preview-img">BİNA YATMA ANALİZİ MODÜLÜ</div>
+      <p class="card-desc">Binaların eğim dereceleri ve domino etkisi simülasyonlarını içeren operasyonel harita sistemi.</p>
+    </div>
+  </a>
+
+  <a href="deprem_verileri.html" class="nav-card">
+    <div class="card-header">
+      <div class="card-title">DEPREM VERİLERİ</div>
+      <div class="card-status">AKTİF</div>
+    </div>
+    <div class="card-body">
+      <div class="preview-img">TERMAL RADYASYON VERİSİ</div>
+      <p class="card-desc">GÖKTÜRK-1 ve NASA FIRMS verileriyle entegre termal erken uyarı ve bariyer hattı planlama.</p>
+    </div>
+  </a>
+
+  <a href="rota_takip.html" class="nav-card">
+    <div class="card-header">
+      <div class="card-title">HASAR & LOJİSTİK</div>
+      <div class="card-status">GÜNCEL</div>
+    </div>
+    <div class="card-body">
+      <div class="preview-img">ACİL MÜDAHALE YOLLARI</div>
+      <p class="card-desc">Enkaz bölgeleri, güvenli toplanma alanları ve acil ikmal yollarının gerçek zamanlı takibi.</p>
+    </div>
+  </a>
+
+  <a href="uydu_durumu.html" class="nav-card">
+    <div class="card-header">
+      <div class="card-title">UYDU DURUMU VE METEOROLOJİK VERİLER</div>
+      <div class="card-status" style="color:var(--accent)">BAĞLI</div>
+    </div>
+    <div class="card-body">
+      <div class="preview-img">UYDU GÖRÜNTÜLERİ VE TELEMETRİ</div>
+      <p class="card-desc">Aktif uydu geçişleri, görüntüleme kuyruğu ve haberleşme link durumlarının takibi.</p>
+    </div>
+  </a>
+</main>
+
+<div id="footer-info">
+  <div style="color:var(--accent); border-bottom:1px solid var(--border); margin-bottom:10px; padding-bottom:5px;">SİSTEM DURUMU</div>
+  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+    <span>BAĞLANTI:</span> <span style="color:#00ff88">GÜVENLİ (SSL)</span>
+  </div>
+  <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+    <span>VERİ HATTI:</span> <span>KAF - KUZEY KOL</span>
+  </div>
+  <div style="display:flex; justify-content:space-between;">
+    <span>UYARI:</span> <span class="blink">SİSMİK HAREKETLİLİK</span>
+  </div>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR') + " UTC";
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+</body>
+</html>

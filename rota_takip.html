@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A.F.E.T. :: Marmara Bölge Komuta Terminali v2.0</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <style>
+    :root[data-theme="dark"] {
+      --bg-root: #010812; --bg-panel: #020f1f; --border: #0a2a45;
+      --accent: #00f2ff; 
+      --route-blue: #000080; /* Lacivert */
+      --route-green: #5ac591; /* Koyu Yeşil */
+      --critical: #b30000; /* Koyu Kırmızı */
+      --success: #008f4c;  /* Koyu Yeşil */
+      --text-primary: #e0f7ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg-root); color: var(--text-primary); font-family: 'Rajdhani', sans-serif; }
+
+    #app { display: flex; flex-direction: column; height: 100vh; gap: 1px; background: var(--border); }
+    
+    #header { 
+      background: #00060f; border-bottom: 2px solid var(--border); 
+      display: flex; align-items: center; justify-content: space-between; 
+      padding: 0 20px; height: 10vh;
+    }
+    
+    .nav-back-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--accent);
+      padding: 6px 14px; font-family: 'Share Tech Mono'; font-size: 0.8rem;
+      cursor: pointer; margin-right: 20px; display: flex; align-items: center; gap: 8px;
+      transition: all 0.3s; text-decoration: none; letter-spacing: 1px;
+    }
+    .nav-back-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); border-color: #fff; }
+
+    #main { display: flex; flex: 1; gap: 1px; overflow: hidden; position: relative; }
+    .col { display: flex; flex-direction: column; background: var(--bg-panel); }
+    .col-left { flex: 0 0 35%; border-right: 1px solid var(--border); }
+    .col-center { flex: 1; }
+    
+    .col-header { padding: 8px 12px; background: #010812; border-bottom: 2px solid var(--border); font-family: 'Orbitron'; font-size: 0.7rem; color: var(--accent); letter-spacing: 1px; }
+    .map-wrapper { flex: 1; position: relative; }
+    .map-container { width: 100%; height: 100%; background: #010812 !important; }
+
+    .header-logo-badge {
+      background: var(--critical); padding: 8px 15px; font-family: 'Orbitron'; font-weight: 900; 
+      font-size: 1.2rem; border: 2px solid #fff; box-shadow: 0 0 10px var(--critical); margin-right: 15px;
+    }
+
+    .header-title-text { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 2px; font-weight: 900; }
+    #clock { font-family: 'Share Tech Mono'; color: var(--accent); font-size: 1.5rem; font-weight: bold; }
+
+    #info-box {
+      position: absolute; bottom: 20px; right: 20px; width: 280px;
+      background: rgba(1, 12, 26, 0.9); border: 1px solid var(--accent);
+      padding: 15px; z-index: 3000; border-radius: 4px;
+    }
+    .box-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; font-weight: 700; }
+    .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-family: 'Share Tech Mono'; font-size: 0.75rem; }
+    .color-sample { width: 14px; height: 14px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <header id="header">
+    <div style="display:flex; align-items:center;">
+      <a href="/menu.html" class="nav-back-btn"><span>&lt;</span> GERİ DÖN</a>
+      <div class="header-logo-badge">A.F.E.T.</div>
+      <div>
+        <div class="header-title-text">KOMUTA MERKEZİ // <span style="color:var(--accent)">İSTANBUL</span></div>
+        <div style="font-size: 0.7rem; color: var(--accent); letter-spacing: 1px;">GÖRÜNTÜ İŞLEME VE ANALİZ TERMİNALİ</div>
+      </div>
+    </div>
+    <div id="clock">--:--:-- UTC</div>
+  </header>
+
+  <div id="main">
+    <div class="col col-left">
+      <div class="col-header">01 // BÖLGESEL HASAR ANALİZİ</div>
+      <div class="map-wrapper"><div id="mapDamage" class="map-container"></div></div>
+    </div>
+    
+    <div class="col col-center">
+      <div class="col-header">02 // OPERASYONEL ROTA VE LOJİSTİK</div>
+      <div class="map-wrapper">
+        <div id="mapRoute" class="map-container"></div>
+        <div id="info-box">
+          <div class="box-title">SİSTEM GÖSTERGELERİ</div>
+          <div class="legend-item"><div class="color-sample" style="background: var(--critical); border: 1px solid #fff;"></div><span>KRİTİK ENKAZ BÖLGESİ</span></div>
+          <div class="legend-item"><div class="color-sample" style="background: var(--success); border: 1px solid #fff;"></div><span>TOPLANMA ALANI</span></div>
+          <div class="legend-item"><div style="width:20px; height:4px; background:var(--route-blue);"></div><span>ANA İKMAL HATTI (LACİVERT)</span></div>
+          <div class="legend-item"><div style="width:20px; height:4px; background:var(--route-green);"></div><span>ACİL MÜDAHALE (YEŞİL)</span></div>
+          <div style="margin-top: 10px; font-size: 0.7rem; color: var(--accent); font-family: 'Share Tech Mono';">● A.F.E.T. VERİ AKIŞI: AKTİF</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- TÜM KOORDİNAT VERİLERİ (İLK SİTEDEN AKTARILDI) ---
+const worldCoords = [[-90, -180], [-90, 180], [90, 180], [90, -180]];
+const marmaraHole = [[39.8, 26.0], [39.8, 31.0], [42.2, 31.0], [42.2, 26.0]];
+
+const BLUE_ROUTES = [
+    [[41.00360, 28.98230], [41.00439, 28.98255], [41.00460, 28.98224], [41.00503, 28.98232],[41.00350, 28.97928],[41.00404, 28.97891],[41.00485, 28.97936],[41.00531, 28.97866],[41.00449, 28.97789],[41.00403, 28.97718]],
+    [[41.00350, 28.97928],[41.00335, 28.97883]],
+    [[41.00157, 28.94765],[41.00213, 28.95026],[41.00315, 28.96049],[41.00581, 28.96167]],
+    [[41.00155, 28.94902],[41.00125, 28.94369],[41.00214, 28.93948],[41.00204, 28.93731],[41.00681, 28.93548]],
+    [[41.01657, 28.97826],[41.01639, 28.97629],[41.01410, 28.97490],[41.01359, 28.97538]],
+    [[41.01398, 28.97512],[41.01278, 28.97527],[41.01204, 28.97547]],
+    [[41.02658, 28.95835],[41.02718, 28.95467],[41.02654, 28.95445],[41.02584, 28.95512],[41.02486, 28.95356]],
+    [[41.00671, 28.93639],[41.01228, 28.93909],[41.01128, 28.94244]],
+    [[41.01954, 28.92484],[41.01228, 28.93909]],
+    [[41.03053, 28.93487],[41.02577, 28.93985],[41.02229, 28.94456],[41.02183, 28.94391]],
+    [[41.01008, 28.94814],[41.00963, 28.95033],[41.00963, 28.95303],[41.00960, 28.95750]],
+    [[41.00845, 28.97058],[41.00794, 28.97758],[41.00815, 28.97828]],
+    [[41.01015, 28.97642],[41.00960, 28.97710]],
+    [[41.00938, 28.98017],[41.01056, 28.97865],[41.00835, 28.97842]],
+    [[41.02567, 28.95414],[41.02600, 28.95079]],
+    [[41.02240, 28.94448],[41.02548, 28.95032]],
+    [[41.00415, 28.97689],[41.00388, 28.97575],[41.00372, 28.97484],[41.00322, 28.97372],[41.00206, 28.97005]],
+    [[41.00959, 28.98161],[41.00806, 28.98301],[41.00768, 28.98268],[41.00511, 28.98218]]
+];
+
+const GREEN_ROUTES = [
+    [[41.00472, 28.97514], [41.00495, 28.97494], [41.00667, 28.97643], [41.00758, 28.97664], [41.00733, 28.97754]],
+    [[41.00357, 28.97507], [41.00413, 28.97451], [41.00498, 28.97494]],
+    [[41.00705, 28.97845], [41.00696, 28.97857], [41.00660, 28.97824], [41.00595, 28.97860]],
+    [[41.01117, 28.97653], [41.01122, 28.97799], [41.01187, 28.97894], [41.01261, 28.98006]],
+    [[41.01019, 28.97586], [41.00920, 28.97704], [41.00817, 28.97828], [41.00781, 28.97819]],
+    [[41.00921, 28.97781], [41.00896, 28.97746]],
+    [[41.00934, 28.96394], [41.01089, 28.96355]],
+    [[41.00936, 28.96389], [41.00884, 28.96771]],
+    [[41.01430, 28.97656], [41.01389, 28.97999]],
+    [[41.00965, 28.98017], [41.01065, 28.97872]],
+    [[41.00883, 28.96768], [41.00508, 28.96662],[41.00490, 28.96827]],
+    [[41.01893, 28.94602], [41.01973, 28.94805]],
+    [[41.01837, 28.94124], [41.01762, 28.94002],[41.01755, 28.93878]],
+    [[41.02499, 28.95519], [41.02526, 28.95297], [41.02603, 28.95100]],
+    [[41.01729, 28.93935], [41.01375, 28.94461], [41.01195, 28.94294]],
+    [[41.00975, 28.93346], [41.01009, 28.93135], [41.00857, 28.93121]]
+];
+
+const RED_POLYGONS = [
+    [[41.00894, 28.97824], [41.00939, 28.97733], [41.00985, 28.97779]],
+    [[41.00949, 28.98124], [41.00985, 28.98014], [41.00998, 28.98134], [41.00957, 28.98175]],
+    [[41.00839, 28.93195], [41.00696, 28.93566], [41.00779, 28.92577], [41.01079, 28.92798]],
+    [[41.02208, 28.94434], [41.01871, 28.94639], [41.01768, 28.94161], [41.01982, 28.94040]],
+    [[41.01330, 28.96803], [41.01568, 28.96971], [41.01585, 28.96606]],
+    [[41.00945, 28.95758], [41.00929, 28.96385], [41.00578, 28.96218], [41.00596, 28.95605]],
+    [[41.00105, 28.92975], [40.99744, 28.92988], [40.99861, 28.92345], [41.00157, 28.92605]],
+    [[41.00418, 28.97681], [41.00398, 28.97572], [41.00441, 28.97512], [41.00491, 28.97568]],
+    [[41.00366, 28.97925], [41.00496, 28.97943], [41.00615, 28.98111], [41.00520, 28.98186]],
+    [[41.00353, 28.97499], [41.00406, 28.97831], [41.00301, 28.97873], [41.00202, 28.97568]],
+    [[41.01167, 28.96510], [41.01264, 28.96468], [41.01233, 28.96280], [41.01112, 28.96350]],
+    [[41.01415, 28.97643], [41.01463, 28.97560], [41.01346, 28.97493], [41.01328, 28.97635]],
+    [[41.01104, 28.97490], [41.01184, 28.97582], [41.01085, 28.97739], [41.01015, 28.97640]],
+    [[41.02442, 28.95569], [41.02487, 28.95518], [41.02559, 28.95404], [41.02351, 28.95454]]
+];
+
+const GREEN_POLYGONS = [
+    [[41.01088, 28.93374], [41.00998, 28.93368], [41.00990, 28.93537], [41.01083, 28.93525]],
+    [[41.01327, 28.95764], [41.01480, 28.95448], [41.01566, 28.95594], [41.01469, 28.95776]],
+    [[41.01848, 28.94947], [41.02008, 28.94817], [41.01952, 28.95137], [41.01810, 28.95094]],
+    [[41.01406, 28.98069], [41.01327, 28.98244], [41.01083, 28.97869]],
+    [[41.00588, 28.94216], [41.00541, 28.94188], [41.00493, 28.93828]],
+    [[41.01902, 28.93654], [41.01821, 28.93638], [41.01696, 28.93828], [41.01747, 28.93875]],
+    [[41.01507, 28.95166], [41.01581, 28.95338], [41.01674, 28.95455], [41.01444, 28.95376]],
+    [[41.00471, 28.96934], [41.00489, 28.96905], [41.00481, 28.96824], [41.00417, 28.96896]],
+    [[41.02670, 28.95015], [41.02625, 28.94885], [41.02533, 28.94953], [41.02594, 28.95086]],
+    [[41.00681, 28.97820], [41.00717, 28.97742], [41.00775, 28.97802], [41.00751, 28.97887]]
+];
+
+// --- HARİTA BAŞLATMA ---
+function initMap(id) {
+    const map = L.map(id, {
+        center: [41.008, 28.970],
+        zoom: 14,
+        zoomControl: false,
+        attributionControl: false
+    });
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+    
+    // Karanlık Maskeleme
+    L.polygon([worldCoords, marmaraHole], { 
+      fillColor: '#010812', fillOpacity: 1, color: '#010812', weight: 0, interactive: false 
+    }).addTo(map);
+
+    return map;
+}
+
+const mapDamage = initMap('mapDamage');
+const mapRoute = initMap('mapRoute');
+
+// Stiller (v1.0'dan v2.0 renklerine uyarlandı)
+const blueStyle = { color: '#000080', weight: 6, opacity: 0.9, lineJoin: 'round' };
+const greenStyle = { color: '#5ac591', weight: 6, opacity: 0.9, lineJoin: 'round' };
+const redZoneOpts = { color: '#b30000', fillColor: '#b30000', fillOpacity: 0.6, weight: 2 };
+const greenZoneOpts = { color: '#008f4c', fillColor: '#a6fbd2', fillOpacity: 0.5, weight: 2 };
+
+// Verileri Her İki Haritaya Ekle
+RED_POLYGONS.forEach(z => {
+    L.polygon(z, redZoneOpts).addTo(mapDamage);
+    L.polygon(z, redZoneOpts).addTo(mapRoute);
+});
+
+GREEN_POLYGONS.forEach(z => {
+    L.polygon(z, greenZoneOpts).addTo(mapDamage);
+    L.polygon(z, greenZoneOpts).addTo(mapRoute);
+});
+
+// Rotaları Sadece Rota Haritasına Ekle
+BLUE_ROUTES.forEach(r => L.polyline(r, blueStyle).addTo(mapRoute));
+GREEN_ROUTES.forEach(r => L.polyline(r, greenStyle).addTo(mapRoute));
+
+// --- SENKRONİZASYON ---
+mapDamage.on('move', () => {
+    mapRoute.setView(mapDamage.getCenter(), mapDamage.getZoom(), { animate: false });
+});
+mapRoute.on('move', () => {
+    mapDamage.setView(mapRoute.getCenter(), mapRoute.getZoom(), { animate: false });
+});
+
+// --- SAAT ---
+setInterval(() => { 
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR') + " UTC"; 
+}, 1000);
+</script>
+
+</body>
+</html>
